@@ -29,28 +29,14 @@ public class Deck : MonoBehaviour
 
     private void InitCardValues()
     {
-
         int valorAuxiliar = 0;
-
-        for(int i = 0; i<52; i++)
+        for (int i = 0; i < 52; i++)
         {
-            if(values[i] % 13 == 0)
-            {
-                values[i] = 11;
-            }
-            if(values[i] == 0 || values[i] == 13 || values[i] == 26 || values[i] == 39)
-            {
-                valorAuxiliar = 2;
-            }
-            values[i] = valorAuxiliar;
             valorAuxiliar++;
+            if (valorAuxiliar > 10) valorAuxiliar = 10;
+            if (i == 13 || i == 26 || i == 39) valorAuxiliar = 1;
+            values[i] = valorAuxiliar;
         }
-
-        /*TODO:
-         * Asignar un valor a cada una de las 52 cartas del atributo "values".
-         * En principio, la posición de cada valor se deberá corresponder con la posición de faces. 
-         * Por ejemplo, si en faces[1] hay un 2 de corazones, en values[1] debería haber un 2.
-         */
     }
 
     private void ShuffleCards()
