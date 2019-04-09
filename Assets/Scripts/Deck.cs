@@ -29,13 +29,30 @@ public class Deck : MonoBehaviour
 
     private void InitCardValues()
     {
-        int valorAuxiliar = 0;
+        int valorAuxiliar = 1;
         for (int i = 0; i < 52; i++)
         {
             valorAuxiliar++;
-            if (valorAuxiliar > 10) valorAuxiliar = 10;
-            if (i == 13 || i == 26 || i == 39) valorAuxiliar = 1;
-            values[i] = valorAuxiliar;
+
+            if (i == 0 || i == 13 || i == 26 || i == 39)
+            {
+                values[i] = 11;
+                valorAuxiliar = 1;
+            }
+
+            else if (valorAuxiliar >= 10)
+            {
+                values[i] = 10;
+            }
+            
+            else
+            {
+                values[i] = valorAuxiliar;
+            }
+        }
+        for (int i = 0; i < 52; i++)
+        {
+            Debug.Log(i +" => "+values[i]);
         }
     }
 
@@ -87,7 +104,7 @@ public class Deck : MonoBehaviour
         player.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]/*,cardCopy*/);
         cardIndex++;
         CalculateProbabilities();
-    }       
+    }
 
     public void Hit()
     {
