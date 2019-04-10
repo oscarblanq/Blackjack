@@ -76,9 +76,20 @@ public class Deck : MonoBehaviour
         {
             PushPlayer();
             PushDealer();
-            /*TODO:
-             * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
-             */
+        }
+        
+        //Si el jugador obtiene 21 puntos
+        if (values[0] + values[2] == 21)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+
+            //Si el dealer ha obtenido 21 es empate.
+            if (values[1] + values[3] == 21) finalMessage.text = "EMPATE";
+
+            //En caso contrario, ha sido solo el jugador el que ha obtenido Blackjack
+            else finalMessage.text = "¡BLACKJACK!";
         }
     }
 
