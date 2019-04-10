@@ -64,9 +64,9 @@ public class Deck : MonoBehaviour
             faces[cartaAzar] = cartaActual;
 
             //Barajamos los valores de las cartas 
-            int currentCardValue = values[i];
+            int valorActual = values[i];
             values[i] = values[cartaAzar];
-            values[cartaAzar] = currentCardValue;
+            values[cartaAzar] = valorActual;
         }
     }
 
@@ -84,6 +84,8 @@ public class Deck : MonoBehaviour
 
     private void CalculateProbabilities()
     {
+
+
         /*TODO:
          * Calcular las probabilidades de:
          * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
@@ -112,32 +114,44 @@ public class Deck : MonoBehaviour
     }
 
     public void Hit()
-    {
-        /*TODO: 
-         * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-         */
-        
+    {        
         //Repartimos carta al jugador
         PushPlayer();
 
-        /*TODO:
-         * Comprobamos si el jugador ya ha perdido y mostramos mensaje
-         */      
+        int playerPoints = player.GetComponent<CardHand>().points;
+        int dealerPoints = dealer.GetComponent<CardHand>().points;
 
+        if(playerPoints > 21)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            finalMessage.text = "¡HAS PERDIDO!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
+
+        if(playerPoints == 21)
+        {
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+            if (dealerPoints == 21) finalMessage.text = "EMPATE";
+            else finalMessage.text = "¡HAS GANADO!";
+            hitButton.interactable = false;
+            stickButton.interactable = false;
+        }
     }
 
     public void Stand()
     {
-        /*TODO: 
-         * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-         */
+        //Se voltea la primera carta del dealer
+        dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+
+        
 
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
-         */                
-         
+         */
+
     }
 
     public void PlayAgain()
