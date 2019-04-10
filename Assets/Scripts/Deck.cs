@@ -30,7 +30,7 @@ public class Deck : MonoBehaviour
     private void InitCardValues()
     {
         int valorAuxiliar = 1;
-        for (int i = 0; i < 52; i++)
+        for (int i = 0; i < values.Length; i++)
         {
             valorAuxiliar++;
 
@@ -50,19 +50,24 @@ public class Deck : MonoBehaviour
                 values[i] = valorAuxiliar;
             }
         }
-        for (int i = 0; i < 52; i++)
-        {
-            Debug.Log(i +" => "+values[i]);
-        }
     }
 
     private void ShuffleCards()
     {
-        /*TODO:
-         * Barajar las cartas aleatoriamente.
-         * El método Random.Range(0,n), devuelve un valor entre 0 y n-1
-         * Si lo necesitas, puedes definir nuevos arrays.
-         */       
+        for (int i = 0; i < values.Length; i++)
+        {
+            int cartaAzar = Random.Range(i, values.Length);
+
+            //Barajamos los sprites
+            Sprite cartaActual = faces[i];
+            faces[i] = faces[cartaAzar];
+            faces[cartaAzar] = cartaActual;
+
+            //Barajamos los valores de las cartas 
+            int currentCardValue = values[i];
+            values[i] = values[cartaAzar];
+            values[cartaAzar] = currentCardValue;
+        }
     }
 
     void StartGame()
