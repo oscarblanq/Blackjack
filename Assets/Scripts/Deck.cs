@@ -96,12 +96,9 @@ public class Deck : MonoBehaviour
 
     private void CalculateProbabilities()
     {
-        /*TODO:
-         * Calcular las probabilidades de:
-         * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
-         */
-
-        probMessage.text = PrimeraProbabilidad() + "% | "+ SegundaProbabilidad().ToString() + "%";
+        probMessage.text = PrimeraProbabilidad() + "% | " +
+            SegundaProbabilidad().ToString() + "% | " +
+            TerceraProbabilidad()+"%";
     }
 
     /* *********************** Primera Probabilidad ********************************
@@ -134,20 +131,19 @@ public class Deck : MonoBehaviour
             //añadirán a cartas favorables si lo son.
             if (dealerPoints > 10 && (dealerPoints + values[i]) > playerPoints) cartasFavorables++;
         }
-        Debug.Log("Cartas favorables: "+cartasFavorables+" cardIndex: " + cardIndex);
         return Mathf.Floor( cartasFavorables / (52 - cardIndex)  *100 );
     }
 
-        /* *********************** Segunda Probabilidad ******************************* *
-         * **************************************************************************** *
-         * Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta *
-         * **************************************************************************** *
-         ****************************************************************************** */
-        private float SegundaProbabilidad()
-        {
+    /* *********************** Segunda Probabilidad ******************************* *
+     * **************************************************************************** *
+     * Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta *
+     * **************************************************************************** *
+     ****************************************************************************** */
+    private float SegundaProbabilidad()
+    {
         int playerPoints = values[0] + values[2];
         int dealerPoints = values[3];
-        
+
         float cartasFavorables = 0;
 
         //Si la carta oculta del dealer puede favorecer al jugador
@@ -171,10 +167,56 @@ public class Deck : MonoBehaviour
                 cartasFavorables++;
             }
         }
-        return Mathf.Floor( cartasFavorables / (52 - cardIndex) * 100);
+        return Mathf.Floor(cartasFavorables / (52 - cardIndex) * 100);
     }
 
-    void PushDealer()
+    /* *********************** Tercera Probabilidad ******************************* *
+     * **************************************************************************** *
+     * Probabilidad de que el jugador obtenga más de 21 si pide una carta. ******** *
+     * **************************************************************************** *
+     ****************************************************************************** */
+    private float TerceraProbabilidad()
+    {
+        int playerPoints = values[0] + values[2];
+        int dealerPoints = values[3];
+
+        float cartasFavorables = 0;
+
+        //Si la carta oculta del dealer puede favorecer la probabilidad
+        //se cuenta como una carta favorable, excepto si es un As
+        if ( values[1] != 11 && (playerPoints + values[1]) > 21) cartasFavorables++;
+
+        //Si la carta oculta del dealer es un As se cuenta como un 1 en caso de que
+        //la puntuación del jugador sea mayor de 10
+        if ( values[1] == 11 && playerPoints > 10 && (playerPoints + 1 > 21) ) cartasFavorables++;
+
+        //Si la carta oculta del dealer es un As se cuenta como un 11 en caso de que
+        //la puntuación del jugador sea menor de 11
+        if (values[1] == 11 && playerPoints < 11) cartasFavorables++;
+
+        //Se realiza un recorrido por todos los valores de las cartas que están por salir
+        for (int i = cardIndex; i < values.Length; i++)
+        {
+            //Se cuentan las cartas favorables para que el jugador obtenga más de 21
+            //exceptuando los ases
+            if ( values[i] != 11 && (playerPoints + values[i]) > 21) cartasFavorables++;
+
+            //Si el valor del jugador es superior a 10, los ases contarán como 1 y se
+            //añadirán a cartas favorables.
+            if (playerPoints > 10 && values[i] == 11 && (playerPoints + 1) > 21) cartasFavorables++;
+
+            //Si el valor del jugador es inferior a 11, los ases contarán como 11 y se
+            //añadirán a cartas favorables.
+            if (playerPoints < 11 && values[i] == 11 && (playerPoints + values[i]) > 21) cartasFavorables++;
+        }
+
+        //Si el jugador consigue un blackjack, no existirán cartas favorables
+        if (playerPoints == 21) cartasFavorables = 0;
+
+        return Mathf.Floor(cartasFavorables / (52 - cardIndex) * 100);
+    }
+
+        void PushDealer()
     {
         /*TODO:
          * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
