@@ -18,7 +18,6 @@ public class Deck : MonoBehaviour
     private void Awake()
     {    
         InitCardValues();
-
     }
 
     private void Start()
@@ -39,16 +38,9 @@ public class Deck : MonoBehaviour
                 values[i] = 11;
                 valorAuxiliar = 1;
             }
-
-            else if (valorAuxiliar >= 10)
-            {
-                values[i] = 10;
-            }
+            else if (valorAuxiliar >= 10) values[i] = 10;
             
-            else
-            {
-                values[i] = valorAuxiliar;
-            }
+            else values[i] = valorAuxiliar;
         }
     }
 
@@ -216,21 +208,15 @@ public class Deck : MonoBehaviour
         return Mathf.Floor(cartasFavorables / (52 - cardIndex) * 100);
     }
 
-        void PushDealer()
+    void PushDealer()
     {
-        /*TODO:
-         * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
-         */
-        dealer.GetComponent<CardHand>().Push(faces[cardIndex],values[cardIndex]);
-        cardIndex++;        
+        dealer.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]);
+        cardIndex++;
     }
 
     void PushPlayer()
     {
-        /*TODO:
-         * Dependiendo de cómo se implemente ShuffleCards, es posible que haya que cambiar el índice.
-         */
-        player.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]/*,cardCopy*/);
+        player.GetComponent<CardHand>().Push(faces[cardIndex], values[cardIndex]);
         cardIndex++;
         CalculateProbabilities();
     }
@@ -282,7 +268,6 @@ public class Deck : MonoBehaviour
 
         if(dealerPoints >= 17)
         {
-
             if (playerPoints > dealerPoints || dealerPoints > 21) finalMessage.text = "¡HAS GANADO!";
             else if (playerPoints < dealerPoints) finalMessage.text = "¡HAS PERDIDO!";
             else if (playerPoints == dealerPoints) finalMessage.text = "EMPATE";
