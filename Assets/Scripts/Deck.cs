@@ -98,20 +98,53 @@ public class Deck : MonoBehaviour
     {
         /*TODO:
          * Calcular las probabilidades de:
-         * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
          */
 
-        probMessage.text = SegundaProbabilidad().ToString() + "%";
+        probMessage.text = PrimeraProbabilidad() + "% | "+ SegundaProbabilidad().ToString() + "%";
     }
 
-    /* *********************** Segunda Probabilidad ******************************* *
-     * **************************************************************************** *
-     * Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta *
-     * **************************************************************************** *
-     ****************************************************************************** */
-    private float SegundaProbabilidad()
+    /* *********************** Primera Probabilidad ********************************
+    * **************************************************************************** *
+    * Probabilidad de que el dealer tenga más puntuación que el jugador teniendo * *
+    * *********************************************************una carta oculta. * *
+    ****************************************************************************** */
+    private float PrimeraProbabilidad()
     {
+        int playerPoints = values[0] + values[2];
+        int dealerPoints = values[3];
+
+        float cartasFavorables = 0;
+
+        //Si la carta oculta del dealer puede favorecerle
+        //se cuenta como una carta favorable
+        if ( (dealerPoints + values[1]) > playerPoints) cartasFavorables++;
+
+        //Si la carta oculta del dealer es un As y puede favorecele actuando como un 1
+        //se cuenta como una carta favorable
+        if (values[1] == 11 && (dealerPoints + 1) > playerPoints) cartasFavorables++;
+
+        //Se realiza un recorrido por todos los valores de las cartas que están por salir y se
+        //cuentas las cartas favorables para que el valor del dealer sea mayor que el valor del jugador
+        for (int i = cardIndex; i < values.Length - 1; i++)
+        {
+            if ( (dealerPoints + values[i]) > playerPoints) cartasFavorables++;
+
+            //Si el valor del dealer es superior a 10, los ases contarán 1 en vez de 11 y se
+            //añadirán a cartas favorables si lo son.
+            if (dealerPoints > 10 && (dealerPoints + values[i]) > playerPoints) cartasFavorables++;
+        }
+        Debug.Log("Cartas favorables: "+cartasFavorables+" cardIndex: " + cardIndex);
+        return Mathf.Floor( cartasFavorables / (52 - cardIndex)  *100 );
+    }
+
+        /* *********************** Segunda Probabilidad ******************************* *
+         * **************************************************************************** *
+         * Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta *
+         * **************************************************************************** *
+         ****************************************************************************** */
+        private float SegundaProbabilidad()
+        {
         int playerPoints = values[0] + values[2];
         int dealerPoints = values[3];
         
@@ -138,7 +171,7 @@ public class Deck : MonoBehaviour
                 cartasFavorables++;
             }
         }
-        return Mathf.Floor((cartasFavorables / (52 - cardIndex)) * 100);
+        return Mathf.Floor( cartasFavorables / (52 - cardIndex) * 100);
     }
 
     void PushDealer()
