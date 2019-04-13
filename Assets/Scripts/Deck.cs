@@ -155,21 +155,21 @@ public class Deck : MonoBehaviour
         //Se voltea la primera carta del dealer
         dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
+        //Se ocultan los botones
+        hitButton.interactable = false;
+        stickButton.interactable = false;
+
         int playerPoints = player.GetComponent<CardHand>().points;
         int dealerPoints = dealer.GetComponent<CardHand>().points;
 
-        while (dealerPoints <= 16)
+        while (dealerPoints < 17)
         {
             PushDealer();
-            int dealerPoints2 = dealer.GetComponent<CardHand>().points;
-            Stand();
-            if (dealerPoints2 >= 17) break;
+            dealerPoints = dealer.GetComponent<CardHand>().points;
         }
 
         if(dealerPoints >= 17)
         {
-            hitButton.interactable = false;
-            stickButton.interactable = false;
 
             if (playerPoints > dealerPoints || dealerPoints > 21) finalMessage.text = "¡HAS GANADO!";
             else if (playerPoints < dealerPoints) finalMessage.text = "¡HAS PERDIDO!";
