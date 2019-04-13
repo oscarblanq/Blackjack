@@ -17,7 +17,7 @@ public class Deck : MonoBehaviour
        
     private void Awake()
     {    
-        InitCardValues();        
+        InitCardValues();
 
     }
 
@@ -71,7 +71,7 @@ public class Deck : MonoBehaviour
     }
 
     void StartGame()
-    {
+    {        
         for (int i = 0; i < 2; i++)
         {
             PushPlayer();
@@ -91,18 +91,54 @@ public class Deck : MonoBehaviour
             //En caso contrario, ha sido solo el jugador el que ha obtenido Blackjack
             else finalMessage.text = "¡BLACKJACK!";
         }
+        CalculateProbabilities();
     }
 
     private void CalculateProbabilities()
     {
-
-
         /*TODO:
          * Calcular las probabilidades de:
          * - Teniendo la carta oculta, probabilidad de que el dealer tenga más puntuación que el jugador
-         * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta          
          */
+
+        probMessage.text = SegundaProbabilidad().ToString() + "%";
+    }
+
+    /* *********************** Segunda Probabilidad ******************************* *
+     * **************************************************************************** *
+     * Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta *
+     * **************************************************************************** *
+     ****************************************************************************** */
+    private float SegundaProbabilidad()
+    {
+        int playerPoints = values[0] + values[2];
+        int dealerPoints = values[3];
+        
+        float cartasFavorables = 0;
+
+        //Si la carta oculta del dealer puede favorecer al jugador
+        //se cuenta como una carta favorable
+        if (17 <= playerPoints + values[1] && playerPoints + values[1] <= 21) cartasFavorables++;
+
+        //Si la carta oculta del dealer es un As y puede favorecer al jugador actuando como un 1
+        //se cuenta como una carta favorable
+        if (values[1] == 11 && 17 <= (playerPoints + 1) && (playerPoints + 1) <= 21) cartasFavorables++;
+
+        //Se realiza un recorrido por todos los valores de las cartas que están por salir
+        //y se cuentan las cartas favorables para que el valor del jugador esté comprendido entre 17 y 21
+        for (int i = cardIndex; i < values.Length; i++)
+        {
+            if (17 <= playerPoints + values[i] && playerPoints + values[i] <= 21) cartasFavorables++;
+
+            //Si el valor del jugador es superior a 10, los ases contarán 1 en vez de 11 y se
+            //añadirán a cartas favorables si lo son.
+            if (playerPoints > 10 && 17 <= (playerPoints + 1) && (playerPoints + 1) <= 21 && values[i] == 11)
+            {
+                cartasFavorables++;
+            }
+        }
+        return Mathf.Floor((cartasFavorables / (52 - cardIndex)) * 100);
     }
 
     void PushDealer()
@@ -125,7 +161,7 @@ public class Deck : MonoBehaviour
     }
 
     public void Hit()
-    {        
+    {
         //Repartimos carta al jugador
         PushPlayer();
 
@@ -148,6 +184,7 @@ public class Deck : MonoBehaviour
             hitButton.interactable = false;
             stickButton.interactable = false;
         }
+        CalculateProbabilities();
     }
 
     public void Stand()
@@ -188,5 +225,4 @@ public class Deck : MonoBehaviour
         ShuffleCards();
         StartGame();
     }
-    
 }
