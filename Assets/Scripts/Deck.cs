@@ -13,8 +13,15 @@ public class Deck : MonoBehaviour
     public Text probMessage;
 
     public int[] values = new int[52];
-    int cardIndex = 0;    
-       
+    int cardIndex = 0;
+
+    public Text banca;
+    private int valorBanca = 1000;
+    public Text apuesta;
+    private int valorApuesta;
+    public Button apuestaMas;
+    public Button apuestaMenos;
+
     private void Awake()
     {    
         InitCardValues();
@@ -63,7 +70,7 @@ public class Deck : MonoBehaviour
     }
 
     void StartGame()
-    {        
+    {
         for (int i = 0; i < 2; i++)
         {
             PushPlayer();
@@ -78,10 +85,10 @@ public class Deck : MonoBehaviour
             stickButton.interactable = false;
 
             //Si el dealer ha obtenido 21 es empate.
-            if (values[1] + values[3] == 21) finalMessage.text = "EMPATE";
+            if (values[1] + values[3] == 21) JuegoTerminado(1);
 
             //En caso contrario, ha sido solo el jugador el que ha obtenido Blackjack
-            else finalMessage.text = "¡BLACKJACK!";
+            else JuegoTerminado(2);
         }
         CalculateProbabilities();
     }
@@ -232,18 +239,14 @@ public class Deck : MonoBehaviour
         if(playerPoints > 21)
         {
             dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
-            finalMessage.text = "¡HAS PERDIDO!";
-            hitButton.interactable = false;
-            stickButton.interactable = false;
+            JuegoTerminado(0);
         }
 
         if(playerPoints == 21)
         {
             dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
-            if (dealerPoints == 21) finalMessage.text = "EMPATE";
-            else finalMessage.text = "¡HAS GANADO!";
-            hitButton.interactable = false;
-            stickButton.interactable = false;
+            if (dealerPoints == 21) JuegoTerminado(1);
+            else JuegoTerminado(2);
         }
         CalculateProbabilities();
     }
@@ -254,6 +257,7 @@ public class Deck : MonoBehaviour
         dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
         //Se ocultan los botones
+        playAgainButton.interactable = false;
         hitButton.interactable = false;
         stickButton.interactable = false;
 
@@ -268,9 +272,9 @@ public class Deck : MonoBehaviour
 
         if(dealerPoints >= 17)
         {
-            if (playerPoints > dealerPoints || dealerPoints > 21) finalMessage.text = "¡HAS GANADO!";
-            else if (playerPoints < dealerPoints) finalMessage.text = "¡HAS PERDIDO!";
-            else if (playerPoints == dealerPoints) finalMessage.text = "EMPATE";
+            if (playerPoints > dealerPoints || dealerPoints > 21) JuegoTerminado(2);
+            else if (playerPoints < dealerPoints) JuegoTerminado(0);
+            else if (playerPoints == dealerPoints) JuegoTerminado(1);
         }
     }
 
@@ -278,11 +282,71 @@ public class Deck : MonoBehaviour
     {
         hitButton.interactable = true;
         stickButton.interactable = true;
+
+        apuestaMas.interactable = false;
+        apuestaMenos.interactable = false;
+        playAgainButton.interactable = false;
+
         finalMessage.text = "";
         player.GetComponent<CardHand>().Clear();
-        dealer.GetComponent<CardHand>().Clear();          
+        dealer.GetComponent<CardHand>().Clear();
         cardIndex = 0;
         ShuffleCards();
         StartGame();
+    }
+
+    public void SubirApuesta()
+    {
+        if (valorApuesta < valorBanca)
+        {
+            valorApuesta += 10;
+            apuesta.text = valorApuesta.ToString() + "€";
+            playAgainButton.interactable = true;
+        }
+    }
+    
+    public void BajarApuesta()
+    {
+        if (valorApuesta > 0)
+        {
+            valorApuesta -= 10;
+            apuesta.text = valorApuesta.ToString() + "€";
+            if (valorApuesta == 0) playAgainButton.interactable = false;
+        }
+    }
+
+    private void JuegoTerminado(int codigoJuego)
+    {
+        playAgainButton.interactable = false;
+        hitButton.interactable = false;
+        stickButton.interactable = false;
+
+        apuestaMas.interactable = true;
+        apuestaMenos.interactable = true;
+
+        apuesta.text = "0€";
+        
+
+        if(codigoJuego == 0)
+        {
+            finalMessage.text = "¡HAS PERDIDO!";
+            valorBanca -= valorApuesta;
+        }
+
+        if(codigoJuego == 1) finalMessage.text = "¡EMPATE!";
+
+        if (codigoJuego == 2)
+        {
+            finalMessage.text = "¡HAS GANADO!";
+            valorBanca += (2 * valorApuesta);
+        }
+
+        if(codigoJuego == 3)
+        {
+            finalMessage.text = "¡BLACKJACK!";
+            valorBanca += (2 * valorApuesta);
+        }
+        banca.text = valorBanca.ToString() + "€";
+        valorApuesta = 0;
     }
 }
