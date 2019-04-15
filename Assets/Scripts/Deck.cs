@@ -287,6 +287,9 @@ public class Deck : MonoBehaviour
         apuestaMenos.interactable = false;
         playAgainButton.interactable = false;
 
+        valorBanca -= valorApuesta;
+        banca.text = valorBanca + "€";
+
         finalMessage.text = "";
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();
