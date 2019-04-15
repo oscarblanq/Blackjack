@@ -333,10 +333,13 @@ public class Deck : MonoBehaviour
         if(codigoJuego == 0)
         {
             finalMessage.text = "¡HAS PERDIDO!";
-            valorBanca -= valorApuesta;
         }
 
-        if(codigoJuego == 1) finalMessage.text = "¡EMPATE!";
+        if (codigoJuego == 1)
+        {
+            finalMessage.text = "¡EMPATE!";
+            valorBanca += valorApuesta;
+        }
 
         if (codigoJuego == 2)
         {
